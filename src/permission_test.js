@@ -19,14 +19,13 @@ router.beforeEach((to, from, next) => {
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`))
   /* has token */
   // TODO login 登录:用户已登录, 但尚未获取到用户信息
-  debugger
   if (storage.get(ACCESS_TOKEN)) {
     if (to.path === loginRoutePath) {
       next({ path: defaultRoutePath })
       NProgress.done()
     } else {
     // TODO login 登录:登录成功之后, GetInfo获取用户基本信息
-    debugger
+
     store
       .dispatch('GetInfo')
       .then(res => {

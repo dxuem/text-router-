@@ -55,7 +55,6 @@ const user = {
       return new Promise((resolve, reject) => {
         // TODO login 登录:登录成功之后, GetInfo获取用户基本信息
         getInfo().then(response => {
-          debugger
           // commit('SET_LOADED_USER_INFO_FROM_BACKEND', true)
           //const result = response.result
           const result = response.data

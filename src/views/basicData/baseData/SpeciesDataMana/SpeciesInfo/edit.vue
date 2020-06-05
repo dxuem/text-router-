@@ -8,7 +8,7 @@
     title="物种基本信息维护"
     :width="960"
     :visible="visible"
-    okText="保存"
+    :okText="btnText"
     cancelText="取消"
     :confirmLoading="loading"
     @cancel="() => { $emit('cancel') }"
@@ -21,46 +21,17 @@
         </a-form-item>
         <a-row>
         <a-col :span="12">
-          <a-form-item label="COL ID">
+          <a-form-item label="COL ID" props="col_id">
             <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="COL(CN)ID">
+          <a-form-item label="COL(CN)ID" props="col_id">
             <a-input
-              v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
-            />
-          </a-form-item>
-        </a-col>
-        </a-row>
-        <a-row>
-        <a-col :span="12">
-        <a-form-item label="COL拉丁名">
-          <a-input
-            v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
-          />
-        </a-form-item>
-        </a-col>
-        <a-col :span="12">
-        <a-form-item label="COL(CN)拉丁名">
-          <a-input
-            v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
-          />
-        </a-form-item>
-        </a-col>
-        </a-row>
-        <a-col :span="12">
-          <a-form-item label="COL科名">
-            <a-input
-              v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="COL(CN)中文名">
-            <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
@@ -68,31 +39,34 @@
         </a-row>
         <a-row>
         <a-col :span="12">
-        <a-form-item label="COL属名">
+        <a-form-item label="COL拉丁名" props="col_id">
           <a-input
+          v-model="col_id"
             v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
           />
         </a-form-item>
         </a-col>
         <a-col :span="12">
-        <a-form-item label="COL亚属名">
+        <a-form-item label="COL(CN)拉丁名" props="col_id">
           <a-input
+          v-model="col_id"
             v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
           />
         </a-form-item>
         </a-col>
         </a-row>
-        <a-row>
         <a-col :span="12">
-          <a-form-item label="COL物种信息级别">
+          <a-form-item label="COL科名" props="col_id">
             <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="COL种名">
+          <a-form-item label="COL(CN)中文名" props="col_id">
             <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
@@ -100,14 +74,14 @@
         </a-row>
         <a-row>
         <a-col :span="12">
-        <a-form-item label="COL亚种名">
+        <a-form-item label="COL属名" props="col_id">
           <a-input
             v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
           />
         </a-form-item>
         </a-col>
         <a-col :span="12">
-        <a-form-item label="COL亚种名maker">
+        <a-form-item label="COL亚属名" props="col_id">
           <a-input
             v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
           />
@@ -116,15 +90,52 @@
         </a-row>
         <a-row>
         <a-col :span="12">
-          <a-form-item label="COL物种名状态">
+          <a-form-item label="COL物种信息级别" props="col_id">
             <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="COL作者">
+          <a-form-item label="COL种名" props="col_id">
             <a-input
+            v-model="col_id"
+              v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
+            />
+          </a-form-item>
+        </a-col>
+        </a-row>
+        <a-row>
+        <a-col :span="12">
+        <a-form-item label="COL亚种名" props="col_id">
+          <a-input
+          v-model="col_id"
+            v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
+          />
+        </a-form-item>
+        </a-col>
+        <a-col :span="12">
+        <a-form-item label="COL亚种名maker" props="col_id">
+          <a-input
+            v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
+          />
+        </a-form-item>
+        </a-col>
+        </a-row>
+        <a-row>
+        <a-col :span="12">
+          <a-form-item label="COL物种名状态" props="col_id">
+            <a-input
+            v-model="col_id"
+              v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="COL作者" props="col_id">
+            <a-input
+            v-model="col_id"
               v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]"
             />
           </a-form-item>
@@ -168,8 +179,12 @@ export default {
       }
     }
     return {
-      form: this.$form.createForm(this),
+      form:{
+
+      },
+      // form: this.$form.createForm(this),
       confirmLoading: false,
+      btnText:"保存"
     }
   },
   created() {

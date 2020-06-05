@@ -79,10 +79,6 @@ const speciesList = (options) => {
         common_names: [{
           commonname: "绒额䴓"
         }],
-        0: {
-          commonname: ""
-        },
-        commonname: "",
         common_season: "留鸟",
         cover_img: "http://rims-dev.oss-cn-shenzhen.aliyuncs.com/image/8418a2ca680b0d93fa59e8fabeafa437.jpg",
         distribution: "西藏东南部、云南南部及西部、广西、贵州。",

@@ -75,11 +75,11 @@
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleDetail(record)">物种描述</a>
+            <a @click="descDetail(record)">物种描述</a>
             <a-divider type="vertical" />
           </template>
           <template>
-            <a @click="handleEdit(record)">审核</a>
+            <a @click="handleAudit(record)">审核</a>
             <a-divider type="vertical" />
           </template>
         </span>
@@ -233,10 +233,29 @@ export default {
     },
     handleEdit (record) {
       this.visible = true
-      this.mdl = { ...record }
+      this.$refs.detail.btnText='保存'
+      this.edit(record)
+    },
+    edit(record){
+      for(let key in this.$refs.detail.form){
+        if(record.hasOwnProperty(key)){
+          this.$refs.detail.form[key]=record[key]
+        }
+      }
+    },
+    handleAudit(record){
+      this.visible = true
+      this.$refs.detail.btnText='审核通过'
+      this.edit(record)
     },
     // 监测记录
     recordDetail(record){
+      record.tabSuatus="record"
+      this.$router.push({path:'/description',name:'物种详情', params: record})
+    },
+    // 物种描述
+    descDetail(record){
+      record.tabSuatus="desc"
       this.$router.push({path:'/description',name:'物种详情', params: record})
     },
     handleOk () {

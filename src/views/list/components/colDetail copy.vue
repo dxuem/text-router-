@@ -296,7 +296,6 @@ export default {
       // })
     },
     // initForm() {
-    //   debugger
     //   if (this.popState !== 'add') {
     //     for (let i = 0; i < stepForms.length; i++) {
     //       for (let key in stepForms[i]) {

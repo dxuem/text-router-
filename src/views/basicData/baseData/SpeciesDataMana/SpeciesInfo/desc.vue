@@ -73,9 +73,11 @@
           :activeTabKey="noTitleKey"
           @tabChange="key => handleTabChange(key, 'noTitleKey')"
         >
-          <desc-page v-if="noTitleKey === 'article'"></desc-page>
-          <moni-record v-else-if="noTitleKey === 'app'"></moni-record>
-          <images v-else-if="noTitleKey === 'project'"></images>
+          <desc-page :data="descdata" v-if="noTitleKey === 'desc'"></desc-page>
+          <moni-record :data="imgdata" v-else-if="noTitleKey === 'record'"></moni-record>
+          <images v-else-if="noTitleKey === 'images'"></images>
+          <!-- <moni-record v-else-if="noTitleKey === 'record'"></moni-record>
+          <images v-else-if="noTitleKey === 'images'"></images> -->
         </a-card>
       </a-col>
     </a-row>
@@ -97,23 +99,47 @@ export default {
     SoundLib,
     SpecimenLib
   },
-  props:{
-    form:{
-      descNum:{type:Number,default:0},
-      recordNum:{type:Number,default:0},
-      imageNum:{type:Number,default:0},
-      soundNum:{type:Number,default:0},
-      sampleNum:{type:Number,default:0}
-      }
-  },
   data () {
     return {
+      descdata:[
+        {
+          title: '外观描述',
+          desc:'暂无数据',
+          isedit:false
+        },
+        {
+          title: '常见生境',
+          desc:'暂无数据',
+          isedit:false
+        },
+        {
+          title: '常见海拔',
+          desc:'暂无数据',
+          isedit:false
+        },
+        {
+          title: '常见季节',
+          desc:'暂无数据',
+          isedit:false
+        },
+        {
+          title: '物种习性',
+          desc:'暂无数据',
+          isedit:false
+        },
+        {
+          title: '常见分布',
+          desc:'暂无数据',
+          isedit:false
+        },
+],
+imgdata:[],
       form:{
-      descNum:0,
-      recordNum:0,
-      imageNum:0,
-      soundNum:0,
-      sampleNum:0,
+      descNum:'0',
+      recordNum:'0',
+      imageNum:'0',
+      soundNum:'0',
+      sampleNum:'0',
       threaten_grade:'',//濒危等级
       protection_grade:'',//保护等级
       cover_img:'',//封面
@@ -128,15 +154,68 @@ export default {
       teamSpinning: true,
       tabListNoTitle: [
         {
-          key: 'article',
-          tab: '描述('+this.form.descNum+')'
+          key: 'desc',
+          tab: '描述'
         },
         {
-          key: 'app',
+          key: 'record',
+          tab: '监测记录(0)'
+        },
+        {
+          key: 'images',
+          tab: '图片库(0)'
+        },
+        {
+          key: 'soundLib',
+          tab: '声音库(0)'
+        },
+        {
+          key: 'sampleLib',
+          tab: '标本库(0)'
+        }
+      ],
+      
+      
+      noTitleKey: 'record'
+    }
+  },
+  computed: {
+    ...mapGetters(['nickname', 'avatar'])
+  },
+  mounted () {
+    this.getTeams()
+    this.initdata(this.$route.params)
+  },
+  methods: {
+    initdata(results){
+    let that=this;
+    for(let key in this.form){
+        if(results.hasOwnProperty(key)){
+          this.form[key]=results[key]
+        }
+      }
+      for(let i=0;i<results.illustration.common_names.length;i++){
+          that.tags.push(results.illustration.common_names[i].commonname)
+        }
+        // let temp=results.illustration.commonname.splice(',')
+        // that.tags.push(results.illustration.commonname)
+      // }
+      this.form.cover_img=results.illustration.cover_img
+      this.form.threaten_grade=results.illustration.threaten_grade
+      this.form.protection_grade=results.illustration.protection_grade
+      this.form.imageNum=results.illustration.pictures.length
+      this.form.soundNum=results.illustration.sounds.length
+      this.tabListNoTitle=[
+        {
+          key: 'desc',
+          tab: '描述'
+        },
+        {
+          key: 'record',
           tab: '监测记录('+this.form.recordNum+')'
         },
         {
-          key: 'project',
+          key: 'images',
           tab: '图片库('+this.form.imageNum+')'
         },
         {
@@ -147,40 +226,36 @@ export default {
           key: 'sampleLib',
           tab: '标本库('+this.form.sampleNum+')'
         }
-      ],
-      noTitleKey: 'app'
-    }
-  },
-  computed: {
-    ...mapGetters(['nickname', 'avatar'])
-  },
-  mounted () {
-    this.getTeams()
-    let results=this.$route.params
-    let that=this;
-    debugger
-    for(let key in this.form){
-        if(results.hasOwnProperty(key)){
-          this.form[key]=results[key]
+      ]
+      // 描述页
+      this.descdata[0].desc=results.illustration.appearance  
+      this.descdata[1].desc=results.illustration.habitat
+      this.descdata[2].desc=results.illustration.common_alt
+      this.descdata[3].desc=results.illustration.common_season
+      this.descdata[4].desc=results.illustration.habit
+      this.descdata[5].desc=results.illustration.distribution
+      for(let i=0;i<this.descdata.length;i++){
+        if(!this.descdata[i].desc){
+          this.descdata[i].desc='暂无数据'
         }
       }
-      for(let i=0;i<results.illustration.common_names.length;i++){
-        that.tags.push(results.illustration.common_names[i].commonname)
+      //图片库
+      for(let i=0;i<results.illustration.pictures.length;i++){
+        this.imgdata.push({url:results.illustration.pictures[i].url})
       }
-      this.form.cover_img=results.illustration.cover_img
-      this.form.threaten_grade=results.illustration.threaten_grade
-      this.form.protection_grade=results.illustration.protection_grade
-  },
-  methods: {
+      // 页签
+      this.noTitleKey=results.tabSuatus
+
+    },
     getTeams () {
       this.$http.get('/workplace/teams').then(res => {
         this.teams = res.result
         this.teamSpinning = false
       })
     },
-    // handleTabChange (key, type) {
-    //   this[type] = key
-    // },
+    handleTabChange (key, type) {
+      this[type] = key
+    },
     handleTagClose (removeTag) {
       const tags = this.tags.filter(tag => tag !== removeTag)
       this.tags = tags
