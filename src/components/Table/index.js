@@ -11,11 +11,7 @@ export default {
 
       localLoading: false,
       localDataSource: [],
-      localPagination: Object.assign({}, this.pagination),
-      show:true,
-      clear:function(){
-        return true
-      }
+      localPagination: Object.assign({}, this.pagination)
     }
   },
   props: Object.assign({}, T.props, {
@@ -51,9 +47,7 @@ export default {
      */
     alert: {
       type: [Object, Boolean],
-      default: null,
-      show: true,
-      clear: Function
+      default: null
     },
     rowSelection: {
       type: Object,
@@ -252,6 +246,7 @@ export default {
           {item.title}总计 <a style="font-weight: 600">{!item.customRender ? item.total : item.customRender(item.total)}</a>
         </span>)
       })
+
       // 绘制 清空 按钮
       const clearItem = (typeof this.alert.clear === 'boolean' && this.alert.clear) ? (
         this.renderClear(this.clearSelected)
@@ -276,6 +271,7 @@ export default {
     const props = {}
     const localKeys = Object.keys(this.$data)
     const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
+
     Object.keys(T.props).forEach(k => {
       const localKey = `local${k.substring(0, 1).toUpperCase()}${k.substring(1)}`
       if (localKeys.includes(localKey)) {

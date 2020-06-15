@@ -1,10 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
-const GitRevisionPlugin = require('git-revision-webpack-plugin')
-const GitRevision = new GitRevisionPlugin()
+// const GitRevisionPlugin = require('git-revision-webpack-plugin')
+// const GitRevision = new GitRevisionPlugin()
 const buildDate = JSON.stringify(new Date().toLocaleString())
 const createThemeColorReplacerPlugin = require('./config/plugin.config')
-const outputDirData = gitRevisionPlugin.version(); // 获取版本号
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -39,7 +38,7 @@ const vueConfig = {
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       new webpack.DefinePlugin({
         APP_VERSION: `"${require('./package.json').version}"`,
-        GIT_HASH: JSON.stringify(GitRevision.version()),
+        // GIT_HASH: JSON.stringify(GitRevision.version()),
         BUILD_DATE: buildDate
       })
     ],
@@ -110,19 +109,19 @@ const vueConfig = {
   },
   //=============使用本地mock============
   // devServer: {
-  //   // development server port 8000
+  // //   // development server port 8000
   //   port: 8000,
-    // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://nrims.ejdrone.com:3000/webapi',
-    //     ws: false,
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/api': ''
-    //   }
-    //   }
-    // }
+  //   // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
+  //   // proxy: {
+  //   //   '/api': {
+  //   //     target: 'http://nrims.ejdrone.com:3000/webapi',
+  //   //     ws: false,
+  //   //     changeOrigin: true,
+  //   //     pathRewrite: {
+  //   //       '^/api': ''
+  //   //   }
+  //   //   }
+  //   // }
   // },
 
   // disable source map in production

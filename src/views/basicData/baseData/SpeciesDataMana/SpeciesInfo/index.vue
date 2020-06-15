@@ -1,7 +1,8 @@
+
 <!--
-* descript:物种信息
+* descript:科类管理
 * author：dxuem
-* createDate：2020-06-01
+* createDate：2020-05-25
 -->
 <template>
   <page-header-wrapper>
@@ -10,17 +11,15 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="科名称">
-                <a-input v-model="queryParam.col_name_cn" placeholder="请输入科的中文名或拉丁名"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="物种名称">
-                <a-input v-model="queryParam.col_name_cn" placeholder="请输入种的中文名或拉丁名"/>
+              <a-form-item label="搜索物种-科">
+                <a-input v-model="queryParam.col_name_cn" placeholder="请输入中文名或拉丁名" />
               </a-form-item>
             </a-col>
             <a-col :md="!advanced && 8 || 24" :sm="24">
-              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+              <span
+                class="table-page-search-submitButtons"
+                :style="advanced && { float: 'right', overflow: 'hidden' } || {} "
+              >
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
               </span>
@@ -29,19 +28,24 @@
         </a-form>
       </div>
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建物种</a-button>
+        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+            <a-menu-item key="1">
+              <a-icon type="delete" />删除
+            </a-menu-item>
             <!-- lock | unlock -->
-            <a-menu-item key="2"><a-icon type="lock" />批量审批</a-menu-item>
+            <a-menu-item key="2">
+              <a-button type="link" style="color:#000" @click="auditMul">批量审核</a-button>
+              <!-- <a-icon type="audit" @click="auditMul"/>批量审核 -->
+            </a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px">
-            更多操作 <a-icon type="down" />
+            更多操作
+            <a-icon type="down" />
           </a-button>
         </a-dropdown>
       </div>
-
       <s-table
         ref="table"
         size="default"
@@ -52,48 +56,37 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
+        <span slot="serial" slot-scope="text, record, index">{{ index + 1 }}</span>
         <span slot="status" slot-scope="text">
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
         </span>
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
-        <span slot="colcn_name_cn" slot-scope="text, record">
+        <span slot="col_name_cn" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">{{text}}</a>
-            <a-divider type="vertical" />
-          </template>
-        </span>
-        <span slot="recordNum" slot-scope="text, record">
-          <template>
-            <a @click="recordDetail(record)">{{text}} 次</a>
+            <a @click="handleDetail(record)">{{text}}</a>
             <a-divider type="vertical" />
           </template>
         </span>
         <span slot="action" slot-scope="text, record">
-          <template>
-            <a @click="descDetail(record)">物种描述</a>
-            <a-divider type="vertical" />
-          </template>
           <template>
             <a @click="handleAudit(record)">审核</a>
             <a-divider type="vertical" />
           </template>
         </span>
       </s-table>
-
-      <edit
-        ref="detail"
-        :visible="visible"
+      <!-- 新建，编辑，审核 -->
+      <!-- <step-by-step-modal
+        ref="detailModal"
+        :visible="Dvisible"
         :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
+        @cancel="cancelDetail"
         @ok="handleOk"
-      />
-      <!-- <step-by-step-modal ref="modal" @ok="handleOk"/> -->
+        :rowData="mdl"
+        :popState="popState"
+      />-->
+      <!-- <step-by-step-modal ref="modal" @ok="handleOk" /> -->
     </a-card>
   </page-header-wrapper>
 </template>
@@ -101,47 +94,43 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getRoleList, getSpeciesList } from '@/api/manage'
+import { getRoleList, getServiceList } from '@/api/manage'
 
-import edit from './edit'
+// import StepByStepModal from './colDetail'
 // import CreateForm from './modules/CreateForm'
 
 const columns = [
-  // {
-  //   title: '#',
-  //   scopedSlots: { customRender: 'serial' }
-  // },
-  // {
-  //   title: '规则编号',
-  //   dataIndex: 'no'
-  // },
-  {
-    title: '物种名称',
-    dataIndex: 'colcn_name_cn',
-    scopedSlots: { customRender: 'colcn_name_cn' }
-  },
-  {
-    title: '物种拉丁名',
-    dataIndex: 'colcn_name',
-    scopedSlots: { customRender: 'colcn_name' }
-  },
-  {
-    title: '属',
-    dataIndex: 'col_genus',
-    scopedSlots: { customRender: 'col_genus' }
-  },
   {
     title: '科',
-    dataIndex: 'family_col_name_cn',
-    scopedSlots: { customRender: 'family_col_name_cn' }
+    dataIndex: 'col_name_cn',
+    scopedSlots: { customRender: 'col_name_cn' }
   },
   {
-    title: '监测记录',
+    title: '科拉丁名',
+    dataIndex: 'col_name',
+    scopedSlots: { customRender: 'col_name' }
+  },
+  {
+    title: '目',
+    dataIndex: 'order',
+    scopedSlots: { customRender: 'order' }
+  },
+  {
+    title: '纲',
+    dataIndex: 'class',
+    scopedSlots: { customRender: 'class' }
+  },
+  {
+    title: '门',
+    dataIndex: 'phylum',
+    scopedSlots: { customRender: 'phylum' }
+  },
+  {
+    title: '物种数量',
     dataIndex: 'recordNum',
     sorter: true,
     needTotal: true,
-    scopedSlots: { customRender: 'recordNum' },
-    // customRender: (text) => text + ' 次'
+    customRender: text => text + ' 种'
   },
   {
     title: '操作',
@@ -150,121 +139,87 @@ const columns = [
     scopedSlots: { customRender: 'action' }
   }
 ]
-
-// const statusMap = {
-//   0: {
-//     status: 'default',
-//     text: '关闭'
-//   },
-//   1: {
-//     status: 'processing',
-//     text: '运行中'
-//   },
-//   2: {
-//     status: 'success',
-//     text: '已上线'
-//   },
-//   3: {
-//     status: 'error',
-//     text: '异常'
-//   }
-// }
-
 export default {
   name: 'TableList',
   components: {
     STable,
-    Ellipsis,
+    Ellipsis
     // CreateForm,
-    edit
+    // StepByStepModal
   },
-  data () {
+  data() {
     this.columns = columns
     return {
+      popState: '',
       // create model
       visible: false,
+      Dvisible: false,
       confirmLoading: false,
       mdl: null,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
-      queryParam: {
-      },
+      queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        // console.log('loadData request parameters:', requestParameters)
-        return getSpeciesList(requestParameters)
-          .then(res => {
-            return res.result
-          })
+        console.log('loadData request parameters:', requestParameters)
+        return getServiceList(requestParameters).then(res => {
+          return res.result
+        })
       },
       selectedRowKeys: [],
       selectedRows: []
     }
   },
-  filters: {
-    // statusFilter (type) {
-    //   return statusMap[type].text
-    // },
-    // statusTypeFilter (type) {
-    //   return statusMap[type].status
-    // }
-  },
-  created () {
+  created() {
     getRoleList({ t: new Date() })
   },
   computed: {
-    rowSelection () {
+    rowSelection() {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
       }
     }
   },
-  watch: {
-    selectedRowKeys (val) {
-    }
-  },
   methods: {
-    handleAdd () {
-      this.mdl = null
-      this.visible = true
+    handleAdd() {
+      this.Dvisible = true
+      this.$refs.detailModal.btnText = '保存'
+      // this.$refs.detailModal.form.grade='5'
     },
-    handleEdit (record) {
-      this.visible = true
-      this.$refs.detail.btnText='保存'
-      this.edit(record)
-    },
-    edit(record){
-      for(let key in this.$refs.detail.form){
-        if(record.hasOwnProperty(key)){
-          this.$refs.detail.form[key]=record[key]
+    handleDetail(record) {
+      this.Dvisible = true
+      this.$refs.detailModal.btnText = '保存'
+      for (let key in this.$refs.detailModal.form) {
+        if (record.hasOwnProperty(key)) {
+          this.$refs.detailModal.form[key] = record[key]
         }
       }
+      this.$refs.detailModal.form.grade = '5'
+      this.$refs.detailModal.form.super_id = record.order
     },
-    handleAudit(record){
-      this.visible = true
-      this.$refs.detail.btnText='审核通过'
-      this.edit(record)
+    handleAudit(record) {
+      this.Dvisible = true
+      this.$refs.detailModal.btnText = '审核通过'
+      for (let key in this.$refs.detailModal.form) {
+        if (record.hasOwnProperty(key)) {
+          this.$refs.detailModal.form[key] = record[key]
+        }
+      }
+      this.$refs.detailModal.form.grade = '5'
+      this.$refs.detailModal.form.super_id = record.order
     },
-    // 监测记录
-    recordDetail(record){
-      record.tabSuatus="record"
-      this.$router.push({path:'/description',name:'物种详情', params: record})
-    },
-    // 物种描述
-    descDetail(record){
-      record.tabSuatus="desc"
-      this.$router.push({path:'/description',name:'物种详情', params: record})
-    },
-    handleOk () {
-      const form = this.$refs.createModal.form
+    handleOk(saveObj) {
+      const form = this.$refs.detailModal.$refs.ruleForm
       this.confirmLoading = true
-      form.validateFields((errors, values) => {
+      form.validateField((errors, values) => {
         if (!errors) {
-          // console.log('values', values)
-          if (values.id > 0) {
+          if (!values.grade) {
+            values.grade = '5'
+          }
+          if (this.mdl) {
             // 修改 e.g.
             new Promise((resolve, reject) => {
               setTimeout(() => {
@@ -277,8 +232,8 @@ export default {
               form.resetFields()
               // 刷新表格
               this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
+              this.$message.info('保存成功')
+              this.Dvisible = false
             })
           } else {
             // 新增
@@ -293,8 +248,8 @@ export default {
               form.resetFields()
               // 刷新表格
               this.$refs.table.refresh()
-
               this.$message.info('新增成功')
+              this.Dvisible = false
             })
           }
         } else {
@@ -302,30 +257,45 @@ export default {
         }
       })
     },
-    handleCancel () {
-      this.visible = false
-
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
+    cancelDetail() {
+      this.Dvisible = false
+      const form = this.$refs.detailModal.$refs.ruleForm
+      // form.resetFields() // 清理表单数据（可不做）
+      for (let key in this.$refs.detailModal.form) {
+        this.$refs.detailModal.form[key] = ''
+      }
+      this.$refs.detailModal.currentStep = 0
     },
-    handleSub (record) {
+    handleSub(record) {
       if (record.status !== 0) {
         this.$message.info(`${record.no} 订阅成功`)
       } else {
         this.$message.error(`${record.no} 订阅失败，规则已关闭`)
       }
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     },
-    resetSearchForm () {
+    resetSearchForm() {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    auditMul() {
+      this.$confirm({
+        content: h => <div style="color:red;">确认对所选的内容进行审核</div>,
+        onOk() {
+          this.handleOk() //调用保存方法
+        },
+        onCancel() {},
+        okText: '确认',
+        cancelText: '取消',
+        class: 'test'
+      })
     }
   }
 }

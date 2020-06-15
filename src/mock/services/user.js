@@ -2,7 +2,6 @@ import Mock from 'mockjs2'
 import { builder } from '../util'
 
 const info = (options) => {
-  console.log('options', options)
   const userInfo = {
     'id': '4291d7da9005377ec9aec4a71ea837f',
     'name': '天野远子',
@@ -386,7 +385,7 @@ const userNav = (options) => {
       'redirect': '/dashboard/workplace'
     },
     {
-      'name': '首页',
+      'name': 'workplace',
       'parentId': 1,
       'id': 7,
       'meta': {

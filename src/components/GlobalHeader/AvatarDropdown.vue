@@ -29,7 +29,6 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
-import {logout} from '@/api/login'
 
 export default {
   name: 'AvatarDropdown',
@@ -55,16 +54,9 @@ export default {
         title: this.$t('layouts.usermenu.dialog.title'),
         content: this.$t('layouts.usermenu.dialog.content'),
         onOk: () => {
-          logout().then(res => {
-            alert(res.message)
-            }).catch(err => {
-            setTimeout(1)
-            // clearInterval(interval)
-            this.requestFailed(err)
-          })
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
+          return new Promise((resolve, reject) => {
+            setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
+          }).catch(() => console.log('Oops errors!'))
         },
         onCancel () {}
       })

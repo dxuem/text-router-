@@ -1,5 +1,4 @@
 import Mock from 'mockjs2'
-// import storage from 'store'
 import { builder, getBody } from '../util'
 
 const username = ['admin', 'super']

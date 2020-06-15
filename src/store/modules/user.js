@@ -37,13 +37,10 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          // const result = response.data //api接口
-          // mock
           const result = response.result
           storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
-          resolve(response)
-          // this.router.push("/index")
+          resolve()
         }).catch(error => {
           reject(error)
         })
@@ -51,12 +48,11 @@ const user = {
     },
 
     // 获取用户信息
-    // token存在才会获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        // TODO login 登录:登录成功之后, GetInfo获取用户基本信息
         getInfo().then(response => {
           const result = response.result
+
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
             role.permissions = result.role.permissions
@@ -72,8 +68,10 @@ const user = {
           } else {
             reject(new Error('getInfo: roles must be a non-null array !'))
           }
+
           commit('SET_NAME', { name: result.name, welcome: welcome() })
           commit('SET_AVATAR', result.avatar)
+
           resolve(response)
         }).catch(error => {
           reject(error)

@@ -1,18 +1,4 @@
 import request from '@/utils/request'
-// api接口
-// const userApi = {
-//   Login: '/login',
-//   Logout: '/auth/logout',
-//   ForgePassword: '/auth/forge-password',
-//   Register: '/auth/register',
-//   twoStepCode: '/auth/2step-code',
-//   SendSms: '/vcode',
-//   SendSmsErr: '/account/sms_err',
-//   // get my info
-//   UserInfo: '/userinfo',
-//   UserMenu: '/user/nav'
-// }
-// 使用本地mock
 
 const userApi = {
   Login: '/auth/login',
@@ -38,7 +24,6 @@ const userApi = {
  * @param parameter
  * @returns {*}
  */
-// 登录
 export function login (parameter) {
   return request({
     url: userApi.Login,
@@ -46,18 +31,15 @@ export function login (parameter) {
     data: parameter
   })
 }
-// 获取验证码
+
 export function getSmsCaptcha (parameter) {
   return request({
     url: userApi.SendSms,
-    method: 'get',
-    params: parameter,
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    method: 'post',
+    data: parameter
   })
 }
-// 获取用户信息
+
 export function getInfo () {
   return request({
     url: userApi.UserInfo,

@@ -32,12 +32,15 @@
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1">
-              <a-icon type="delete" />删除
+              <a @click="deleteMul">
+                <a-icon type="delete" />删除
+              </a>
             </a-menu-item>
             <!-- lock | unlock -->
             <a-menu-item key="2">
-              <a-button type="link" style="color:#000" @click="auditMul">批量审核</a-button>
-              <!-- <a-icon type="audit" @click="auditMul"/>批量审核 -->
+              <a @click="auditMul(rowSelection)">
+                <a-icon type="lock" />批量审核
+              </a>
             </a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px">
@@ -77,7 +80,7 @@
         </span>
       </s-table>
       <!-- 新建，编辑，审核 -->
-      <step-by-step-modal
+      <!-- <step-by-step-modal
         ref="detailModal"
         :visible="Dvisible"
         :loading="confirmLoading"
@@ -85,7 +88,7 @@
         @ok="handleOk"
         :rowData="mdl"
         :popState="popState"
-      />
+      /> -->
       <!-- <step-by-step-modal ref="modal" @ok="handleOk" /> -->
     </a-card>
   </page-header-wrapper>
@@ -96,7 +99,7 @@ import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { getRoleList, getServiceList } from '@/api/manage'
 
-import StepByStepModal from './colDetail'
+// import StepByStepModal from './colDetail'
 // import CreateForm from './modules/CreateForm'
 
 const columns = [
@@ -145,12 +148,12 @@ export default {
     STable,
     Ellipsis,
     // CreateForm,
-    StepByStepModal
+    // StepByStepModal
   },
   data() {
     this.columns = columns
     return {
-      popState:"",
+      popState: '',
       // create model
       visible: false,
       Dvisible: false,
@@ -179,44 +182,47 @@ export default {
     rowSelection() {
       return {
         selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange
+        onChange: this.onSelectChange,
+        selectedRows: this.selectedRows
       }
     }
   },
   methods: {
     handleAdd() {
-      this.Dvisible = true;
-      this.$refs.detailModal.btnText='保存'
+      this.Dvisible = true
+      this.$refs.detailModal.btnText = '保存'
       // this.$refs.detailModal.form.grade='5'
     },
     handleDetail(record) {
       this.Dvisible = true
-      this.$refs.detailModal.btnText='保存'
-      for(let key in this.$refs.detailModal.form){
-        if(record.hasOwnProperty(key)){
-          this.$refs.detailModal.form[key]=record[key]
+      this.$refs.detailModal.btnText = '保存'
+      for (let key in this.$refs.detailModal.form) {
+        if (record.hasOwnProperty(key)) {
+          this.$refs.detailModal.form[key] = record[key]
         }
       }
-      this.$refs.detailModal.form.grade='5'
-      this.$refs.detailModal.form.super_id=record.order
+      this.$refs.detailModal.form.grade = '5'
+      this.$refs.detailModal.form.super_id = record.order
     },
     handleAudit(record) {
       this.Dvisible = true
-      this.$refs.detailModal.btnText='审核通过'
-      for(let key in this.$refs.detailModal.form){
-        if(record.hasOwnProperty(key)){
-          this.$refs.detailModal.form[key]=record[key]
+      this.$refs.detailModal.btnText = '审核通过'
+      for (let key in this.$refs.detailModal.form) {
+        if (record.hasOwnProperty(key)) {
+          this.$refs.detailModal.form[key] = record[key]
         }
       }
-      this.$refs.detailModal.form.grade='5'
-      this.$refs.detailModal.form.super_id=record.order
+      this.$refs.detailModal.form.grade = '5'
+      this.$refs.detailModal.form.super_id = record.order
     },
     handleOk(saveObj) {
       const form = this.$refs.detailModal.$refs.ruleForm
       this.confirmLoading = true
       form.validateField((errors, values) => {
         if (!errors) {
-          if(!values.grade){values.grade="5"}
+          if (!values.grade) {
+            values.grade = '5'
+          }
           if (this.mdl) {
             // 修改 e.g.
             new Promise((resolve, reject) => {
@@ -231,7 +237,7 @@ export default {
               // 刷新表格
               this.$refs.table.refresh()
               this.$message.info('保存成功')
-              this.Dvisible=false
+              this.Dvisible = false
             })
           } else {
             // 新增
@@ -247,7 +253,7 @@ export default {
               // 刷新表格
               this.$refs.table.refresh()
               this.$message.info('新增成功')
-              this.Dvisible=false
+              this.Dvisible = false
             })
           }
         } else {
@@ -255,21 +261,14 @@ export default {
         }
       })
     },
-    cancelDetail(){
+    cancelDetail() {
       this.Dvisible = false
       const form = this.$refs.detailModal.$refs.ruleForm
       // form.resetFields() // 清理表单数据（可不做）
-      for(let key in this.$refs.detailModal.form){
-          this.$refs.detailModal.form[key]=''
+      for (let key in this.$refs.detailModal.form) {
+        this.$refs.detailModal.form[key] = ''
       }
-      this.$refs.detailModal.currentStep=0
-    },
-    handleSub(record) {
-      if (record.status !== 0) {
-        this.$message.info(`${record.no} 订阅成功`)
-      } else {
-        this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-      }
+      this.$refs.detailModal.currentStep = 0
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
@@ -283,17 +282,18 @@ export default {
         date: moment(new Date())
       }
     },
-    auditMul(){
-    
+    auditMul(rowSelection) {
+      debugger
       this.$confirm({
-        title: '确认对所选的内容进行审核',
         content: h => <div style="color:red;">确认对所选的内容进行审核</div>,
         onOk() {
-          this.handleOk();//调用保存方法
+          this.handleOk() //调用保存方法
         },
         onCancel() {},
-        class: 'test',
-      });
+        okText: '确认',
+        cancelText: '取消',
+        class: 'test'
+      })
     }
   }
 }

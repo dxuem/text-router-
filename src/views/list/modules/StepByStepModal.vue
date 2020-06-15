@@ -106,12 +106,6 @@ const stepForms = [
 
 export default {
   name: 'StepByStepModal',
-  props: {
-    visible: {
-      type: Boolean,
-      required: true
-    }
-  },
   data () {
     return {
       labelCol: {
@@ -122,7 +116,7 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      // visible: false,
+      visible: false,
       confirmLoading: false,
       currentStep: 0,
       mdl: {},

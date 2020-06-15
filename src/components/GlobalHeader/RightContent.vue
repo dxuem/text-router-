@@ -1,13 +1,7 @@
 <template>
   <div :class="wrpCls">
-    <a-col class="iconRight-col">
-            <a-icon class="iconRight" type="search" @click="searchMenu" />
-            <a-input v-show="showsearch" style="width:45%"></a-input>
-            <a-icon class="iconRight" type="question-circle" />
-            <a-icon class="iconRight" type="bell" />
-            <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
+    <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <select-lang :class="prefixCls" />
-          </a-col>
   </div>
 </template>
 
@@ -41,7 +35,6 @@ export default {
   },
   data () {
     return {
-      showsearch:false,
       showMenu: true,
       currentUser: {}
     }
@@ -60,17 +53,6 @@ export default {
         name: 'Serati Ma'
       }
     }, 1500)
-  },
-  methods:{
-    searchMenu() {
-      this.showsearch = this.showsearch;
-    },
   }
 }
 </script>
-<style>
-.iconRight-col .iconRight {
-    margin-right: 15px;
-  
-}
-</style>

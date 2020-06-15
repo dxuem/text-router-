@@ -1,8 +1,3 @@
-<!--
- * descript：登录
- * author：dxuem
- * createDate：2020-05-22
--->
 <template>
   <div class="main">
     <a-form
@@ -23,10 +18,10 @@
             <a-input
               size="large"
               type="text"
-              placeholder="账户: 用户名: 请输入用户名或手机号"
+              placeholder="账户: admin"
               v-decorator="[
                 'username',
-                {rules: [{ required: true, message: '请输入用户名或手机号' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+                {rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
               ]"
             >
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -38,7 +33,7 @@
               size="large"
               type="password"
               autocomplete="false"
-              placeholder="密码: 请输入密码"
+              placeholder="密码: admin or ant.design"
               v-decorator="[
                 'password',
                 {rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
@@ -48,7 +43,7 @@
             </a-input>
           </a-form-item>
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="验证码登录">
+        <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
             <a-input size="large" type="text" placeholder="手机号" v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }], validateTrigger: 'change'}]">
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -93,8 +88,22 @@
           class="login-button"
           :loading="state.loginBtn"
           :disabled="state.loginBtn"
-        >登录</a-button>
+        >确定</a-button>
       </a-form-item>
+
+      <div class="user-login-other">
+        <span>其他登录方式</span>
+        <a>
+          <a-icon class="item-icon" type="alipay-circle"></a-icon>
+        </a>
+        <a>
+          <a-icon class="item-icon" type="taobao-circle"></a-icon>
+        </a>
+        <a>
+          <a-icon class="item-icon" type="weibo-circle"></a-icon>
+        </a>
+        <router-link class="register" :to="{ name: 'register' }">注册账户</router-link>
+      </div>
     </a-form>
 
     <two-step-captcha
@@ -114,7 +123,6 @@ import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step } from '@/api/login'
 
 export default {
-  name: 'login',
   components: {
     TwoStepCaptcha
   },
@@ -172,6 +180,7 @@ export default {
         customActiveKey,
         Login
       } = this
+
       state.loginBtn = true
 
       const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password'] : ['mobile', 'captcha']
@@ -182,7 +191,6 @@ export default {
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          // loginParams.passwd = md5(values.passwd)   //api接口
           loginParams.password = md5(values.password)
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
@@ -216,12 +224,11 @@ export default {
           const hide = this.$message.loading('验证码发送中..', 0)
           getSmsCaptcha({ mobile: values.mobile }).then(res => {
             setTimeout(hide, 2500)
-            // 手机接收，不需要在浏览器显示
-            // this.$notification['success']({
-            //   message: '提示',
-            //   description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-            //   duration: 8
-            // })
+            this.$notification['success']({
+              message: '提示',
+              description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+              duration: 8
+            })
           }).catch(err => {
             setTimeout(hide, 1)
             clearInterval(interval)
@@ -242,6 +249,7 @@ export default {
       })
     },
     loginSuccess (res) {
+      console.log(res)
       // check res.homePage define, set $router.push name res.homePage
       // Why not enter onComplete
       /*

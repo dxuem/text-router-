@@ -4,9 +4,12 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.png" class="logo" alt="logo">
-            <span class="title">保护区信息化系统</span>
+            <img src="~@/assets/logo.svg" class="logo" alt="logo">
+            <span class="title">Ant Design</span>
           </a>
+        </div>
+        <div class="desc">
+          Ant Design 是西湖区最具影响力的 Web 设计规范
         </div>
       </div>
 

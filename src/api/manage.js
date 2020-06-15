@@ -3,15 +3,13 @@ import request from '@/utils/request'
 const api = {
   user: '/user',
   role: '/role',
-  // service: '/server/api/family/list',
-  search: '/server/api/family/search',
-  // species: '/server/api/species/list',
-  species: '/species/list',
   service: '/service',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
-  orgTree: '/org/tree'
+  orgTree: '/org/tree',
+  rout: '/route/route',
 }
+
 export default api
 
 export function getUserList (parameter) {
@@ -37,25 +35,18 @@ export function getServiceList (parameter) {
     params: parameter
   })
 }
-// 查询上级类别
-export function getSuperList (parameter) {
-  return request({
-    url: api.search,
-    method: 'get',
-    params: parameter
-  })
-}
-// 查询物种列表
-export function getSpeciesList (parameter) {
-  return request({
-    url: api.species,
-    method: 'get',
-    params: parameter
-  })
-}
+
 export function getPermissions (parameter) {
   return request({
     url: api.permissionNoPager,
+    method: 'get',
+    params: parameter
+  })
+}
+// 动态路由
+export function getMenu (parameter) {
+  return request({
+    url: api.rout,
     method: 'get',
     params: parameter
   })

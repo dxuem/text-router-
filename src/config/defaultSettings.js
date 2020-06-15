@@ -25,7 +25,7 @@ export default {
   menu: {
     locale: true
   },
-  title: '保护区信息化系统',
+  title: 'Ant Design Pro',
   multiTab: false,
   pwa: false,
   iconfontUrl: '',
